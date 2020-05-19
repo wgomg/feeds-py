@@ -11,7 +11,7 @@ def get_emol_news():
 
     news = {
         'title': 'Emol Nacional',
-        'description': 'Últimas noticias nacionales',
+        'description': 'Ultimas noticias nacionales',
         'link': 'http://www.emol.com',
         'articles': []
     }
