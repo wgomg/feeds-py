@@ -1,7 +1,6 @@
 import requests
 import json
 from bs4 import BeautifulSoup
-import datetime
 import dateutil.parser
 
 
@@ -11,7 +10,7 @@ def get_emol_news():
 
     news = {
         'title': 'Emol Nacional',
-        'description': 'Últimas noticias nacionales',
+        'description': 'Ultimas noticias nacionales',
         'link': 'http://www.emol.com',
         'articles': []
     }
@@ -37,3 +36,41 @@ def get_emol_news():
         news['articles'] = articles
 
     return news
+
+
+def get_biobio_news():
+    news_requests = []
+
+    for page in range(1, 4):
+        news_requests.append(requests.get(
+            'https://www.biobiochile.cl/lista/categorias/nacional?pag=' + str(page)))
+
+    news = {
+        'title': 'Radio Bio Bio - Nacional',
+        'description': 'Ultimas noticias nacionales',
+        'link': 'https://www.biobiochile.cl',
+        'articles': []
+    }
+
+    articles = []
+    for r in news_requests:
+        if r.status_code == 200:
+            soup = BeautifulSoup(r.content, "html.parser")
+
+            for article_data in soup.find_all("div", {"class": "noticia row"}):
+                article = {
+                    'title': article_data.find("h1", {"class": "robotos"}).text,
+                    'link':  article_data.a.get('href'),
+                    'description': '',
+                    'author': article_data.find("p", {"class": "autor"}).text.replace('Por: ', ''),
+                    'pubDate': dateutil.parser.parse(' '.join(list(map(lambda item: item.text if hasattr(item, 'text') else '', article_data.find("div", {"class": "fecha"}).contents))).strip() + 'Z', dayfirst=True)
+                }
+
+                articles.append(article)
+
+    news['articles'] = articles
+
+    return news
+
+
+get_biobio_news()
