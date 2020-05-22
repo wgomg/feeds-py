@@ -1,9 +1,7 @@
 from feedgen.feed import FeedGenerator
 import flask
 
-from scrapper import get_emol_news
-from scrapper import get_biobio_news
-from scrapper import get_lt3_news
+from . import scrapper
 
 app = flask.Flask(__name__)
 app.config['debug'] = True
@@ -11,7 +9,7 @@ app.config['debug'] = True
 
 @app.route('/emol', methods=['GET'])
 def emol():
-    news = get_emol_news()
+    news = scrapper.get_emol_news()
 
     fg = FeedGenerator()
 
@@ -35,7 +33,7 @@ def emol():
 
 @app.route('/biobio', methods=['GET'])
 def biobio():
-    news = get_biobio_news()
+    news = scrapper.get_biobio_news()
 
     fg = FeedGenerator()
 
@@ -59,7 +57,7 @@ def biobio():
 
 @app.route('/lt3', methods=['GET'])
 def lt3():
-    news = get_lt3_news()
+    news = scrapper.get_lt3_news()
 
     fg = FeedGenerator()
 
