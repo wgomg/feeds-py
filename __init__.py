@@ -1,7 +1,7 @@
 from feedgen.feed import FeedGenerator
 import flask
 
-from . import scrapper
+import scrapper
 
 app = flask.Flask(__name__)
 app.config['debug'] = True

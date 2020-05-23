@@ -77,9 +77,9 @@ def get_biobio_news():
 def get_lt3_news():
     news_requests = []
 
-    for page in range(1, 5):
+    for page in range(1, 2):
         news_requests.append(requests.get(
-            'https://www.latercera.com/lo-ultimo/page/' + str(page)))
+            'https://www.latercera.com/categoria/nacional/page/' + str(page) + '/'))
 
     news = {
         'title': 'La Tercera - Lo Ultimo',
@@ -93,14 +93,16 @@ def get_lt3_news():
         if r.status_code == 200:
             soup = BeautifulSoup(r.content, "html.parser")
 
-            for article_data in soup.find_all("article", {"class": "card | border-bottom float"}):
+            now = datetime.datetime.now(datetime.timezone.utc)
+
+            for article_data in soup.find_all("div", {"class": "art-container image_headline_deck_byline"}):
                 pubDateArray = article_data.find("div", {"class": "time"}).small.contents[1].string.strip(
-                ).lower().replace('hace ', '').split(' ')
+                ).split(' ')
 
                 minutes = 0
-                if len(pubDateArray) > 1:
-                    minutes = int(pubDateArray[0]) if pubDateArray[1] == 'minutes' else int(
-                        pubDateArray[0])*60
+                if len(pubDateArray) > 2:
+                    minutes = int(pubDateArray[1]) if pubDateArray[2] == 'minutes' else int(
+                        pubDateArray[1])*60
 
                 descriptionContainer = article_data.find(
                     "div", {"class": "deck | isText"})
@@ -110,11 +112,11 @@ def get_lt3_news():
                     description = descriptionContainer.p.text
 
                 article = {
-                    'title': article_data.find("h3").find("a").contents[2].string.strip(),
+                    'title': article_data.find("h3").a.contents[2].string,
                     'link': "https://www.latercera.com" + article_data.find("h3").a.get("href"),
                     'description': description,
-                    'author': article_data.find("div", {"class": "name"}).find("small").text,
-                    'pubDate': datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(minutes=minutes)
+                    'author': article_data.find("div", {"class": "name"}).small.text,
+                    'pubDate': now - datetime.timedelta(minutes=minutes)
                 }
 
                 articles.append(article)
