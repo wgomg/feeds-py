@@ -80,6 +80,8 @@ def get_lt3_news():
     for page in range(1, 2):
         news_requests.append(requests.get(
             'https://www.latercera.com/categoria/nacional/page/' + str(page) + '/'))
+        news_requests.append(requests.get(
+            'https://www.latercera.com/categoria/politica/page/' + str(page) + '/'))
 
     news = {
         'title': 'La Tercera - Lo Ultimo',
@@ -100,7 +102,7 @@ def get_lt3_news():
                 ).split(' ')
 
                 minutes = 0
-                if len(pubDateArray) > 2:
+                if len(pubDateArray) > 2 and pubDateArray[1].isdigit():
                     minutes = int(pubDateArray[1]) if pubDateArray[2] == 'minutes' else int(
                         pubDateArray[1])*60
 
@@ -112,7 +114,7 @@ def get_lt3_news():
                     description = descriptionContainer.p.text
 
                 article = {
-                    'title': article_data.find("h3").a.contents[2].string,
+                    'title': list(filter(lambda c: c != ' ', article_data.find("h3").a.contents))[1].string,
                     'link': "https://www.latercera.com" + article_data.find("h3").a.get("href"),
                     'description': description,
                     'author': article_data.find("div", {"class": "name"}).small.text,
